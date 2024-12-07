@@ -1,0 +1,53 @@
+<select id="select_age">
+  <option value="">Выберите возраст, для которого будут найдены свободные места</option>
+  {% for age in [3, 4, 5, 6] %}
+  <option value="{{ age }}">{{ age }}</option>
+  {% endfor %}
+</select>
+
+<table id='table_du' hidden>
+    <thead>
+        <tr>
+           <th>Название ДУ</th>
+        </tr>
+    </thead>
+    <tbody>
+      <tr hidden></tr>
+    </tbody>
+</table>
+<script>
+    function handlerChangeSelectAge(event) {
+        let select = document.getElementById('select_age');
+        const age = select.value;
+        if (!age) {
+            document.getElementById('table_du').setAttribute('hidden', 'true'); //скрыть таблицу если ничего не выбрано
+            return;
+        }
+
+        $.ajax({
+            url: `/get/du/free_places/${age}`,
+            type: 'GET',
+            dataType: 'json', // ожидаем json ответ
+            success: function(DUs) {
+            if (!DUs){
+                $('#table_du tbody').html('Нет ДУ со свободными местами для заданного возрвста');
+            } else {
+                let rowsHTML = '';
+                DUs.forEach(du => {
+                    rowsHTML += `<tr><td>${du}</td></tr>`;
+                });
+                $('#table_du tbody').html(rowsHTML); // эффективное обновление таблицы
+            };
+            $('#table_du').removeAttr('hidden');
+        },
+        error: function(xhr, status, error) {
+            console.error("Error:", error);
+            $('#table_du').setAttribute('hidden', 'true'); //скрыть таблицу в случае ошибки
+            alert("Произошла ошибка при загрузке данных о детях.");
+            }
+        });
+    };
+
+    document.getElementById('select_age').addEventListener('change', handlerChangeSelectAge);
+
+</script>

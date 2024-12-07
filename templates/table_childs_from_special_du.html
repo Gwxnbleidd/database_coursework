@@ -1,0 +1,49 @@
+<select id="select_du">
+  <option value="">Выберите дошкольное учреждение</option>
+  {% for du in DUs %}
+  <option value="{{ du['du_id'] }}">{{ du['name'] }}</option>
+  {% endfor %}
+</select>
+
+<table id='table_childs' hidden>
+    <thead>
+        <tr>
+           <th>ФИО ребенка</th>
+        </tr>
+    </thead>
+    <tbody>
+      <tr hidden></tr>
+    </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function handlerChangeSelectDu(event) {
+        let select = document.getElementById('select_du');
+        const du_id = select.value;
+        if (!du_id) {
+          document.getElementById('table_childs').setAttribute('hidden', 'true'); //скрыть таблицу если ничего не выбрано
+          return;
+        };
+  
+        $.ajax({
+            url: `/get/childs/special_du/${du_id}`,
+            type: 'GET',
+            dataType: 'json', // ожидаем json ответ
+            success: function(childs) {
+                let rowsHTML = '';
+                childs.forEach(child => {
+                    rowsHTML += `<tr><td>${child}</td></tr>`; // предполагаем, что child содержит поле fio
+                });
+                $('#table_childs tbody').html(rowsHTML); // эффективное обновление таблицы
+                $('#table_childs').removeAttr('hidden');
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", error);
+                $('#table_childs').setAttribute('hidden', 'true'); //скрыть таблицу в случае ошибки
+                alert("Произошла ошибка при загрузке данных о детях.");
+            }
+        });
+    };
+
+    document.getElementById('select_du').addEventListener('change', handlerChangeSelectDu);
+</script>

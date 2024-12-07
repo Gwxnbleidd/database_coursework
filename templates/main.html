@@ -1,0 +1,267 @@
+<html>
+    <head>
+        <style>
+            body {
+                background-color: #121212;
+            }
+
+            #content {
+                display: flex;
+                margin-top: 10%;
+                height: 75%;
+                overflow: auto;
+                flex-direction: column;
+                /* align-content: center; */
+                justify-content: flex-start;
+                align-items: center;
+            }
+
+            #content::-webkit-scrollbar {
+                width: 10px; /* Ширина полосы прокрутки */
+            }
+            #content::-webkit-scrollbar-thumb {
+                background-color: #5c04bb; /* Фиолетовый цвет ползунка */
+                border-radius: 5px; /* Скругленные углы */
+            }
+
+            form{
+                background: #1D1D1D;
+                height: 80%;
+                width: 30%;
+                margin-top: 2%;
+                border-radius: 5%;
+                padding: 2%
+                padding-top: 1%;
+            }
+
+            form input,
+            form label {
+                color: white;
+                padding: 10px 15px;
+                border-radius: 10px;
+            }
+
+            form input {
+                background-color: #5c04bb;
+            }
+
+            select {
+                border: none;
+                font-size: 14px;
+                padding: 10px 15px;
+                background-color: #5c04bb;
+                color: white;
+                margin-bottom: 1%;
+                border-radius: 10px;
+            }
+
+            table {
+                width: 50%;
+                border: none;
+                margin-bottom: 20px;
+                border-collapse: separate;
+                margin: 1% auto;
+            }
+            table thead th {
+                color: white;
+                text-align: left;
+                border: none;
+                padding: 10px 15px;
+                background: #5c04bb;
+                font-size: 14;
+                border-top: 1px solid #ddd;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+            table tr th:first-child, .table tr td:first-child {
+                border-left: 1px solid #ddd;
+            }
+            table tr th:last-child, .table tr td:last-child {
+                border-right: 1px solid #ddd;
+            }
+            table thead tr th:first-child {
+            border-top-left-radius: 20px;
+
+            }
+            table thead tr th:last-child {
+                border-top-right-radius: 20px;
+            }
+            table tbody td {
+                text-align: left;
+                border: none;
+                padding: 10px 15px;
+                font-size: 14;
+                vertical-align: top;
+                background-color: #1D1D1D;
+                color: white;
+            }
+            table tbody tr:last-child td{
+                border-bottom: 1px solid #ddd;
+            }
+            table tbody tr:last-child td:first-child {
+                border-bottom-left-radius: 20px;
+            }
+            table tbody tr:last-child td:last-child {
+                border-bottom-right-radius: 20px;
+            }
+
+
+            button {
+                border-radius: 10px;
+                color: white;
+                background-color: #5c04bb;
+                padding: 1%;
+                font-size: 14px;
+                margin: .5%;
+                border: 0;
+            }
+            
+            button:hover {
+                box-shadow: 0 0 0 2px white, 0 0 0 4px #3C82F8;
+            }
+            
+            .buttonsDiv {
+                display: flex;
+                background-color: #5c04bb;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 13%;
+                z-index: 100;
+            }    
+
+            .one-line{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-content: center;
+                align-items: flex-start;
+                flex-wrap: wrap;
+                margin: 5%;
+            }
+
+            .one-line label {
+                width: 20%;
+            }
+
+            .one-line select,
+            .one-line input {
+                width: 70%;
+            }
+
+            .sign {
+                display: flex;
+                justify-content: flex-end;
+                font-size: 16;
+            }
+
+            .sign p {
+                color: #6b2e93;
+            }
+
+        </style>
+        <title>Дошкольные учреждения города</title>
+    </head>
+
+    <div class="buttonsDiv">
+        <button type="button" id="allDU">Учет дошкольных учреждений города</button>
+        <button type="button" id="allChildsAttendingDU">Учет детей, посещающих ДУ всех типов</button>
+        <button type="button" id="childsContentDU">Учет детей, стоящих в очереди в ДУ</button>
+        <button type="button" id="updateChild">Изменить данные о ребенке</button>
+        <button type="button" id="DUWithFreePlaces">Список ДУ, в которых есть свободные места для детей заданного возраста</button>
+        <button type="button" id="сhildsNeedsDU">Список детей, нуждающихся в ДУ (по возрасту, категории)</button>
+        <button type="button" id="childsSpecificDU">Список детей указанного ДУ</button>
+    </div>
+
+    <div id="content"></div>
+    <div id="list_DU"></div>
+
+    <div class="sign"><p>А-13-21 Гайчуков Дмитрий</p></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        // Учет дошкольных учреждений города
+        function handlerClickToAllDUButton(){
+            url = `{{ url_for('get_table_du') }}`;
+            contentDiv = document.getElementById('content');
+            if (!contentDiv) { console.log('ошибка!'); return; };
+
+            $(contentDiv).empty();
+            $(contentDiv).load(url);
+        };
+
+        // Учет детей, посещающих ДУ всех типов
+        function handlerClickToAllChildsAttendingDUButton(){
+            url = `{{ url_for('get_table_childs_attending_du') }}`;
+            contentDiv = document.getElementById('content');
+            if (!contentDiv) { console.log('ошибка!'); return; };
+
+            $(contentDiv).empty();
+            $(contentDiv).load(url);
+        };
+
+        // Список детей, стоящих в очереди в ДУ
+        function handlerClickToChildsContentDUButton(){
+            url = `{{ url_for('get_table_childs_in_queue') }}`;
+            contentDiv = document.getElementById('content');
+            if (!contentDiv) { console.log('ошибка!'); return; };
+
+            $(contentDiv).empty();
+            $(contentDiv).load(url);
+        };
+
+        //Список ДУ, в которых есть свободные места для детей заданного возраста
+        function handlerClickToDUWithFreePlacesButton(event){
+            url = `{{ url_for('get_du_free_places') }}`;
+            contentDiv = document.getElementById('content');
+            if (!contentDiv) { console.log('ошибка!'); return; };
+
+            $(contentDiv).empty();
+            $(contentDiv).load(url);
+        };
+
+
+        // Изменить данные о ребенке
+        function handlerClickToUpdateChildButton(){
+            url = `{{ url_for('update_child') }}`;
+            contentDiv = document.getElementById('content');
+            if (!contentDiv) { console.log('ошибка!'); return; };
+
+            $(contentDiv).empty();
+            $(contentDiv).load(url);
+        };
+
+
+        // Список детей, нуждающихся в ДУ (по возрасту, категории)
+        function handlerClickToChildsNeedsDUButton(){
+            url = `{{ url_for('get_table_childs_needs_du') }}`;
+            contentDiv = document.getElementById('content');
+            if (!contentDiv) { console.log('ошибка!'); return; };
+
+            $(contentDiv).empty();
+            $(contentDiv).load(url);
+        };
+
+
+        // Список детей указанного ДУ
+        function handlerClickToChildsSpecificDUButton(event){
+            url = `{{ url_for('get_table_childs_from_special_du') }}`;
+            contentDiv = document.getElementById('content');
+            if (!contentDiv) { console.log('ошибка!'); return; };
+
+            $(contentDiv).empty();
+            $(contentDiv).load(url);
+        };
+
+        document.getElementById('allDU').addEventListener('click', handlerClickToAllDUButton);
+        document.getElementById('allChildsAttendingDU').addEventListener('click', handlerClickToAllChildsAttendingDUButton);
+        document.getElementById('childsContentDU').addEventListener('click', handlerClickToChildsContentDUButton);
+        document.getElementById('updateChild').addEventListener('click', handlerClickToUpdateChildButton);
+        document.getElementById('DUWithFreePlaces').addEventListener('click', handlerClickToDUWithFreePlacesButton);
+        document.getElementById('сhildsNeedsDU').addEventListener('click', handlerClickToChildsNeedsDUButton);
+        document.getElementById('childsSpecificDU').addEventListener('click', handlerClickToChildsSpecificDUButton);
+
+    </script>
+</html>

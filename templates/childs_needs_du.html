@@ -1,0 +1,68 @@
+<style>
+    #table_childs{
+        width: 100%;
+    }
+</style>
+
+<select id="select_age">
+    <option value="">Выберите возраст, для которого будут найдены дети, нуждающиеся в ду</option>
+    {% for age in [3, 4, 5, 6] %}
+    <option value="{{ age }}">{{ age }}</option>
+    {% endfor %}
+</select>
+
+<select id="select_category">
+    <option value="">Выберите категорию, для которой будут найдены дети, нуждающиеся в ду</option>
+    <option value="Приоритетная">Приоритетная</option>
+    <option value="Стандартная">Стандартная</option>
+</select>
+
+<button type="button" id="submit_button">Найти</button>
+
+<div id="scrol">
+<table id="table_childs" hidden>
+    <thead>
+        <tr><th>Дети, нуждающиеся в ДУ</th></tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+</div>
+
+<script>
+    function handlerClickToSubmitButton(event){
+        let age = document.getElementById('select_age').value;
+        let category = document.getElementById('select_category').value;
+        let data = {};
+        
+        if (age) {data.age = age};
+        if (category) {data.category = category};
+
+        $.ajax({
+            url: `/get/childs/needs_du_query`,
+            type: 'GET',
+            data: data,
+            dataType: 'json', // ожидаем json ответ
+            success: function(childs) {
+                if (childs.length === 0) {
+                    $('#table_childs tbody').html(`<tr><td>Ничего не найдено</td></tr>`); // эффективное обновление таблицы
+                    $('#table_childs').removeAttr('hidden');
+                    return;
+                }
+                let rowsHTML = '';
+                childs.forEach(child => {
+                    rowsHTML += `<tr><td>${child.fio}</td></tr>`; // предполагаем, что child содержит поле fio
+                });
+                $('#table_childs tbody').html(rowsHTML); // эффективное обновление таблицы
+                $('#table_childs').removeAttr('hidden');
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", error);
+                $('#table_childs').setAttribute('hidden', 'true'); //скрыть таблицу в случае ошибки
+                alert("Произошла ошибка при загрузке данных о детях.");
+            }
+        });
+    };
+
+    document.getElementById('submit_button').addEventListener('click', handlerClickToSubmitButton);
+</script>

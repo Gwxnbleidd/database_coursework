@@ -1,0 +1,99 @@
+<select id="select_child">
+    <option value="">Выберите ребенка, данные о котором будут изменены</option>
+    {% for child in childs %}
+    <option value="{{ child['id'] }}">{{ child['fio'] }}</option>
+    {% endfor %}
+</select>
+
+<form id="child_form" action="" method="post" hidden>
+    <input type="text" id="id" name="id" hidden>
+
+    <div class='one-line'>
+        <label for="fio">ФИО:</label>
+        <input type="text" id="fio" name="fio" required>
+    </div>
+
+    <div class='one-line'>
+        <label for="adres">Адрес:</label>
+        <input type="text" id="adres" name="adres" required>
+    </div>
+
+    <div class='one-line'>
+        <label for="data_rozhdeniya">Дата рождения:</label>
+        <input type="date" id="data_rozhdeniya" name="data_rozhdeniya" required>
+    </div>
+
+    <div class='one-line'>
+        <label for="kategoriya">Категория:</label>
+        <input type="text" id="kategoriya" name="kategoriya" required>
+    </div>
+
+    <div class='one-line'>
+        <label for="mather">Мать:</label>
+        <select id="mather_select" name="mather">
+            {% for mather in mathers %}
+            <option value="{{ mather['id'] }}">{{ mather['fio'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class='one-line'>
+        <label for="father">Отец:</label>
+        <select id="father_select" name="father">
+            {% for father in fathers %}
+            <option value="{{ father['id'] }}">{{ father['fio'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class='one-line'><input id="submit_button" type="button" value="Обновить данные о ребенке" style="margin: 0 auto;"></div>
+</form>
+
+<script>
+    function handlerChangeSelectChild(event) {
+        let select = document.getElementById('select_child');
+        let c_id = select.value;
+
+        $.ajax({
+            url: `/get/childs/${c_id}`,
+            type: 'GET',
+            dataType: 'json', // ожидаем json ответ
+            success: function(child) {
+                let form = document.getElementById('child_form');
+                form.querySelector('#id').value = child.id;
+                form.querySelector('#fio').value = child.fio;
+                form.querySelector('#adres').value = child.adres;
+
+                const dateString = child.bd;
+                const date = new Date(dateString);
+                const formattedDate = date.toISOString().slice(0, 10);
+                form.querySelector('#data_rozhdeniya').value = formattedDate;
+
+                form.querySelector('#kategoriya').value = child.category;
+                form.querySelector(`#mather_select option[value="${child.m_id}"]`).selected = true;
+                form.querySelector(`#father_select option[value="${child.f_id}"]`).selected = true;
+                form.removeAttribute('hidden');
+            }
+        });
+    };
+
+    function handlerClickToSubmitButton(event) {
+        let data = $(document.getElementById('child_form')).serialize();
+        $.post({
+            url: '/child/update',
+            data: data,
+            success: function(child) {
+                alert('Успешно');
+                document.getElementById('child_form').hidden = true;
+            },
+            error: function() {
+                alert('Ошибка');
+            }
+        });
+    };
+
+
+    document.getElementById('select_child').addEventListener('change', handlerChangeSelectChild);
+    document.getElementById('submit_button').addEventListener('click', handlerClickToSubmitButton);
+
+</script>

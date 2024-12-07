@@ -1,0 +1,25 @@
+<table>
+    <thead>
+        <tr>
+           {%for header in headers%}<th>{{ header }}</th>{% endfor %}
+            <th>Мать</th>
+            <th>Сведения о матери</th>
+            <th>Отец</th>
+            <th>Сведения о отце</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for child in childs %}
+        <tr>
+            <td>{{ child['fio'] }}</td>
+            <td>{{ child['bd'] }}</td>
+            <td>{{ child['address'] }}</td>
+            <td>{{ child['category'] }}</td>
+            <td>{{ child['mather'] }}</td>
+            <td>{{ child['mather_info'] }}</td>
+            <td>{{ child['par_fio'] }}</td>
+            <td>{{ child['par_info'] }}</td>
+        </tr>
+        {% endfor%}
+    </tbody>
+</table>

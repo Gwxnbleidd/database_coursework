@@ -1,0 +1,16 @@
+<table>
+    <thead>
+        <tr>
+           {%for header in headers%}<th>{{ header }}</th>{% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for child in childs %}
+        <tr>
+            {% for data in child.values()%}
+            <td>{{ data }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor%}
+    </tbody>
+</table>
