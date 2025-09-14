@@ -110,13 +110,19 @@ def get_children_need_du(session: Session, age: int = None, category: str = None
     return [dict(id=el[0], fio=el[1]) for el in res]
 
 def update_info_about_children(session: Session, c_id: int, m_id: int, f_id: int, data):
+    """Изменить данные о ребенке
+
+    :param session:
+    :param c_id: ID ребенка
+    :param m_id: ID матери
+    :param f_id: ID отца
+    :param data: Новые данные
+    :return:
+    """
     child = dict(fio=data.get('fio'), data_rozhdeniya=data.get('data_rozhdeniya'), adres=data.get('adres'),
                  kategoriya=data.get('kategoriya'))
     m_info = dict(roditel_id=m_id, rebenok_id=c_id)
     f_info = dict(roditel_id=f_id, rebenok_id=c_id)
-    print(f'{child=}')
-    print(f'{m_info=}')
-    print(f'{f_info=}')
 
     session.execute(update(Rebenok).where(Rebenok.id==c_id).values(**child))
     session.execute(update(RoditelRebenka).where(RoditelRebenka.roditel_id==m_id).values(**m_info))
@@ -141,6 +147,11 @@ def get_children_from_du(session: Session, du_id: int) -> list:
 
 
 def get_all_DU(session: Session):
+    """
+    Учет дошкольных учреждений города
+    :param session:
+    :return: Заголовки для таблицы и данные
+    """
     headers = ('ID', 'Название', 'Назначение', 'Количество мест', 'Стоимость', 'Тип')
 
     stmt = (select(DoshkolnoeUchrezhdenie.nazvanie, DoshkolnoeUchrezhdenie.naznachenie,

@@ -1,10 +1,8 @@
-from unicodedata import category
-
 from sqlalchemy.orm import Session
 
 from database.engine import get_engine
 from database import querys
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -21,10 +19,12 @@ def get_table_childs():
 
     return render_template('table_childs.html', headers=headers, childs=childs)
 
+
 @app.route('/get/childs/<int:c_id>', methods=['GET'])
 def get_special_child(c_id: int):
     with Session(get_engine()) as session:
         return querys.get_child(session, c_id)
+
 
 @app.route('/get/childs/attending_du', methods=['GET'])
 def get_table_childs_attending_du():
@@ -92,6 +92,7 @@ def get_table_du_free_places(age: int):
 def get_du_free_places():
     return render_template('free_places_for_child_special_age.html')
 
+
 @app.route('/child/update', methods=['GET', 'POST'])
 def update_child():
     if request.method == 'GET':
@@ -105,7 +106,8 @@ def update_child():
                 mathers.append(parent)
             else:
                 fathers.append(parent)
-        return render_template('change_data_about_child.html', childs=childs, mathers=mathers, fathers=fathers)
+        return render_template('change_data_about_child.html', childs=childs, mathers=mathers,
+                               fathers=fathers)
 
     data = request.form.to_dict()
     c_id, m_id, f_if = map(int,(data.get('id'), data.get('mather'), data.get('father')))
@@ -113,5 +115,6 @@ def update_child():
         querys.update_info_about_children(session, c_id, m_id, f_if, data)
         return '200'
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
